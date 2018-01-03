@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>net452;netstandard2.0</TargetFrameworks>
+    <Version>0.1.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -9,14 +10,22 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="package-loader.os">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Markdig" Version="0.14.8" />
     <PackageReference Include="OneScript" Version="1.0.19" />
   </ItemGroup>
+
+  <Target Name="PackForHub" DependsOnTargets="Build">
+
+    <Error Text="Build Property OspxTarget is not defined" Condition="'$(OspxTarget)' == ''" />
+    
+    <ItemGroup>
+      <FilesToRemove Include="$(OutputPath)/*.pdb" />
+      <FilesToCopy Include="$(OutputPath)/*.dll" Exclude="$(OutputPath)/ScriptEngine.dll" />
+    </ItemGroup>
+    
+    <Delete Files="@(FilesToRemove)" />
+    <Copy SourceFiles="@(FilesToCopy)" DestinationFolder="$(OspxTarget)" />
+
+  </Target>
 
 </Project>
